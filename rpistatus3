@@ -1,0 +1,21 @@
+#!/bin/bash
+
+RPI="rpi01 rpi02 rpi03 rpi04 rpi05 rpi06 rpi07 rpi08 rpi09 rpi10 rpi11 rpi12 rpi13 rpi14 rpi15 rpi16 rpi17 rpi18 rpi19 rpi20 rpi90"
+
+echo
+
+if [ "$1" != "" ] ; then
+	RPI=$@
+fi
+
+for rpi in $RPI ; do
+	ping -c 1 "$rpi" > /dev/null 2>&1
+	if [ "$?" -eq "0" ] ; then
+		echo "$rpi is alive."
+	else
+		echo "$rpi is dead."
+	fi
+
+done
+
+exit 0
