@@ -1,0 +1,42 @@
+#!/bin/bash
+
+IPs=$(seq -f "172.19.32.%g" 255)
+
+for ip in $IPs ; do
+	ping -c 1 "$ip" > /dev/null 2>&1
+	if [ "$?" -eq "0" ] ; then
+
+		host $ip > /dev/null 2>&1
+		if [ "$?" -eq "0" ] ; then
+	                hostname=$(host $ip)
+			L=${#hostname}
+			hostname=${hostname:$((L-14)):13}
+		else
+			hostname="No name"
+		fi
+
+		macadds=/proc/net/arp
+		hwadd=$(awk -v key="$ip" '$1 == key { print $4 }' $macadds)
+
+		nc -zv -w 1 $ip 22 > /dev/null 2>&1
+		if [ "$?" -eq "0" ] ; then
+	                openps="ssh"
+		else
+			openps="none"
+		fi
+
+		nc -zv -w 1 $ip 80 > /dev/null 2>&1
+                if [ "$?" -eq "0" ] ; then
+                        openps="${openps}, http"
+                fi
+
+		echo "hostname: $hostname"
+		echo "ip address: $ip"
+		echo "mac address: $hwadd"
+		echo "open ports: $openps"
+		echo ""
+
+	fi
+
+done
+exit 0
