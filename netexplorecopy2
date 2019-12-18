@@ -21,14 +21,16 @@ for ip in $IPs ; do
 		nc -zv -w 1 $ip 22 > /dev/null 2>&1
 		if [ "$?" -eq "0" ] ; then
 	                openps="ssh"
-		else
-			openps="none"
 		fi
 
 		nc -zv -w 1 $ip 80 > /dev/null 2>&1
                 if [ "$?" -eq "0" ] ; then
                         openps="${openps}, http"
                 fi
+
+		if [ ${#openps} -eq 0 ] ; then
+			openps="none"
+		fi
 
 		echo "hostname: $hostname"
 		echo "ip address: $ip"
